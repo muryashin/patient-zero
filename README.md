@@ -24,8 +24,6 @@ My outbreak report (a screenshot of `output/outbreak.html`):
 
 ## Questions
 
-Draft explanations to review and rewrite in your own words before submitting.
-
 Mission 1. What does the cell d[i][j] of your table mean, and how is it computed from other cells?
 
 `d[i][j]` is the minimum number of edits needed to turn the first `i` letters of A into the first `j` letters of B. Take the minimum of the cell above plus one for deletion, the cell to the left plus one for insertion, and the diagonal plus zero or one depending on whether the last letters agree. An empty prefix needs one insertion or deletion per letter in the other prefix.
@@ -48,7 +46,7 @@ For each subtree, I compute its minimum cost with the root tested and its minimu
 
 ## AI use
 
-OpenAI Codex generated the first implementation of the mission algorithms and drafted the README explanations using the provided starter project and course hints. It also generated the variant data with the supplied tool, ran the checks and benchmark, and captured the lab screenshot.
+AI assistance covered the initial Java implementations, report explanations, variant generation with the supplied tool, checks, benchmarking, and the lab screenshot. The AI tool used was OpenAI Codex.
 
 ## Timing (Mission 7)
 
@@ -76,6 +74,6 @@ With the pattern held at 2,000 letters, doubling the text increased naive search
 
 ## Before you submit
 
-- Review and adapt the draft implementation and explanations to meet the course's own-work requirement.
+- Review and adapt the implementation and explanations to meet the course's own-work requirement.
 - Run `java tools/Check.java` after any changes.
 - Verify that the public repository link opens and submit it in Moodle.
