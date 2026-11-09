@@ -1,5 +1,3 @@
-import java.util.*;
-
 /**
  * Mission 5. Dynamic programming on the tree of infections. Root the tree in person 0.
  * Input.Tree.neighbours() gives the neighbours of every person. The number of people is at most about 100, so a recursive DFS is fine here.
@@ -17,8 +15,35 @@ public class Outbreak {
      * Main calls this twice: with all costs equal to 1 (the line "Tests needed") and with the real costs ("Cheapest testing").
      */
     public static boolean[] cheapestTests(int n, int[][] nb, int[] cost) {
-        // TODO Mission 5a
-        return new boolean[n];
+        long[] included = new long[n];
+        long[] excluded = new long[n];
+        boolean[] tested = new boolean[n];
+        if (n > 0) {
+            calculateCosts(0, -1, nb, cost, included, excluded);
+            chooseTests(0, -1, false, nb, included, excluded, tested);
+        }
+        return tested;
+    }
+
+    private static void calculateCosts(int person, int parent, int[][] nb, int[] cost,
+                                       long[] included, long[] excluded) {
+        included[person] = cost[person];
+        for (int child : nb[person]) {
+            if (child == parent) continue;
+            calculateCosts(child, person, nb, cost, included, excluded);
+            included[person] += Math.min(included[child], excluded[child]);
+            excluded[person] += included[child];
+        }
+    }
+
+    private static void chooseTests(int person, int parent, boolean required, int[][] nb,
+                                    long[] included, long[] excluded, boolean[] tested) {
+        tested[person] = required || included[person] < excluded[person];
+        for (int child : nb[person]) {
+            if (child != parent) {
+                chooseTests(child, person, !tested[person], nb, included, excluded, tested);
+            }
+        }
     }
 
     /**
@@ -27,7 +52,26 @@ public class Outbreak {
      * Example: a line 0-1-2-3 has chain 3; a star with centre 0 and leaves 1, 2, 3 has chain 2.
      */
     public static int longestChain(int n, int[][] nb) {
-        // TODO Mission 5b
-        return -1;
+        if (n == 0) return 0;
+        int[] longest = {0};
+        depth(0, -1, nb, longest);
+        return longest[0];
+    }
+
+    private static int depth(int person, int parent, int[][] nb, int[] longest) {
+        int first = 0;
+        int second = 0;
+        for (int child : nb[person]) {
+            if (child == parent) continue;
+            int branch = 1 + depth(child, person, nb, longest);
+            if (branch > first) {
+                second = first;
+                first = branch;
+            } else if (branch > second) {
+                second = branch;
+            }
+        }
+        longest[0] = Math.max(longest[0], first + second);
+        return first;
     }
 }
