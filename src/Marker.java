@@ -1,10 +1,15 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Missions 3 and 4. Find a word in a long text.
  */
 public class Marker {
+
+    private static final long BASE = 31;
+    private static final long MOD = 1_000_000_007;
 
     /**
      * Mission 3a. The prefix function of p. pi[i] = the length of the longest proper prefix of p[0..i] that is
@@ -60,7 +65,54 @@ public class Marker {
      * Example: a = "ACGTAC", b = "TTACGT", k = 4: the words of a are ACGT, CGTA, GTAC; only ACGT is in b, so the answer is 1.
      */
     public static int sharedWords(String a, String b, int k) {
-        // TODO Mission 4
-        return -1;
+        if (k <= 0 || k > a.length() || k > b.length()) return 0;
+
+        long leadingPower = 1;
+        for (int i = 1; i < k; i++) leadingPower = leadingPower * BASE % MOD;
+
+        Map<Long, List<Integer>> startsInB = new HashMap<>();
+        long hash = firstHash(b, k);
+        for (int start = 0; start <= b.length() - k; start++) {
+            startsInB.computeIfAbsent(hash, key -> new ArrayList<>()).add(start);
+            if (start < b.length() - k) {
+                hash = slideHash(hash, b.charAt(start), b.charAt(start + k), leadingPower);
+            }
+        }
+
+        int shared = 0;
+        hash = firstHash(a, k);
+        for (int start = 0; start <= a.length() - k; start++) {
+            List<Integer> candidates = startsInB.get(hash);
+            if (candidates != null) {
+                for (int candidate : candidates) {
+                    if (sameWord(a, start, b, candidate, k)) {
+                        shared++;
+                        break;
+                    }
+                }
+            }
+            if (start < a.length() - k) {
+                hash = slideHash(hash, a.charAt(start), a.charAt(start + k), leadingPower);
+            }
+        }
+        return shared;
+    }
+
+    private static long firstHash(String sequence, int k) {
+        long hash = 0;
+        for (int i = 0; i < k; i++) hash = (hash * BASE + sequence.charAt(i)) % MOD;
+        return hash;
+    }
+
+    private static long slideHash(long hash, char outgoing, char incoming, long leadingPower) {
+        long remaining = (hash - outgoing * leadingPower % MOD + MOD) % MOD;
+        return (remaining * BASE + incoming) % MOD;
+    }
+
+    private static boolean sameWord(String a, int startA, String b, int startB, int k) {
+        for (int i = 0; i < k; i++) {
+            if (a.charAt(startA + i) != b.charAt(startB + i)) return false;
+        }
+        return true;
     }
 }
