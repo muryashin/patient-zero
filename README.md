@@ -56,28 +56,26 @@ Milliseconds, average of 3 runs, from `java -cp out Bench`.
 
 | test | size | time |
 |---|---|---|
-| naive search | 20 000 / 40 000 / 80 000 | |
-| KMP | 20 000 / 40 000 / 80 000 | |
-| edit distance | 500 / 1000 / 2000 / 4000 | |
+| naive search | 20 000 / 40 000 / 80 000 | 37.1 / 93.6 / 202.7 |
+| KMP | 20 000 / 40 000 / 80 000 | 3.8 / 2.3 / 0.6 |
+| edit distance | 500 / 1000 / 2000 / 4000 | 13.0 / 17.2 / 68.4 / 213.1 |
 
-What do the numbers say about how the time grows? When you double the size, by how much does each time grow? Two or three sentences.
+With the pattern held at 2,000 letters, doubling the text increased naive search time by about 2.5× and then 2.2×. The measured KMP times fell to about 61% and 26% of the previous measurement, likely because of JVM warm-up and noise at this scale, although the algorithm does linear work. Doubling both strains grew the edit-distance times by about 1.3×, 4.0× and 3.1×, while the DP table itself grows by roughly 4× on each doubling.
 
 ## Complexity
 
-n is the length of the text (or of a strain), m the length of the pattern, k the length of the window, v the number of people. Fill in every algorithm you wrote.
+`n` and `m` are the lengths of the two strings for each algorithm. For KMP, `n` is the text length, `m` the marker length and `h` the number of hits. For Rabin–Karp, `k` is the window length and `c` is the number of candidate pairs examined. The tree has `v` people.
 
 | algorithm | time | space | assumptions |
 |---|---|---|---|
-| Edit distance | | | |
-| LCS | | | |
-| Prefix function and KMP | | | |
-| Rabin-Karp (shared words) | | | |
-| Tree DP | | | |
+| Edit distance | O(nm) | O(nm) | One constant-time update per cell of the full table. |
+| LCS | O(nm) | O(nm) | One constant-time update per cell of the full table. |
+| Prefix function and KMP | O(n + m) | O(m + h) | The prefix function takes O(m) time and space. KMP stores all hit positions. |
+| Rabin–Karp (shared words) | O(n + m + kc) with expected constant-time map lookups | O(m) | Each shift takes constant time. In the worst case, every window of A can check every window of B, giving O(nmk) time. |
+| Tree DP and diameter | O(v) | O(v) | A constant number of traversals of the tree. The recursion stack can grow to the height of the tree. |
 
 ## Before you submit
 
-- The four files in `data` and the screenshot `output/outbreak.png` are in the repository.
-- `java tools/Check.java` shows all examples right.
-- This README is filled in, the program output and the section AI use included.
-- The work is pushed to main (at least one commit per mission) and the repository is public.
-- The link is attached in Moodle.
+- Review and adapt the draft implementation and explanations to meet the course's own-work requirement.
+- Run `java tools/Check.java` after any changes.
+- Verify that the public repository link opens and submit it in Moodle.
